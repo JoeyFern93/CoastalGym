@@ -3,99 +3,95 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>Instant Replay (Web) — Camera with Adjustable Delay</title>
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Instant Replay (Web) — Adjustable Delay + PWA</title>
+  <!-- PWA manifest (create manifest.webmanifest from the commented block at the bottom) -->
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
-    :root {
-      --bg: #0b0f14; --card: #121821; --muted: #97a0ad; --text: #e8eef6; --accent: #4cc9f0; --accent2:#90ee90;
-    }
-    html, body { height: 100%; }
-    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; background: var(--bg); color: var(--text); }
-    header { padding: 14px 18px; border-bottom: 1px solid #1e2633; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    header h1 { font-size: 18px; margin: 0; letter-spacing: 0.2px; }
-    .pill { background: #182232; border:1px solid #243149; padding:6px 10px; border-radius: 999px; font-size: 12px; color: var(--muted); }
-
-    .wrap { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 330px 1fr; gap: 16px; }
-    @media (max-width: 980px) { .wrap { grid-template-columns: 1fr; } }
-
-    .panel { background: var(--card); border:1px solid #1e2633; border-radius: 14px; padding: 14px; }
-    .panel h2 { font-size: 14px; font-weight: 600; margin: 0 0 10px; color: var(--muted); letter-spacing:.2px; }
-
-    .controls { display: grid; gap: 12px; }
-    label { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
-    select, input[type="number"], input[type="range"] { -webkit-appearance:none; appearance:none; width: 100%; background:#0e1520; color: var(--text); padding:10px 12px; border-radius: 10px; border:1px solid #243149; outline:none; font-size: 14px; }
-    input[type="range"] { height: 36px; padding: 0 2px; }
+    :root { --bg:#0b0f14; --card:#121821; --muted:#97a0ad; --text:#e8eef6; --accent:#4cc9f0; }
+    html, body { height:100%; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:var(--bg); color:var(--text); }
+    header { padding:14px 18px; border-bottom:1px solid #1e2633; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    header h1 { font-size:18px; margin:0; }
+    .pill { background:#182232; border:1px solid #243149; padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted); }
+    .wrap { max-width:1200px; margin:0 auto; padding:16px; display:grid; grid-template-columns:350px 1fr; gap:16px; }
+    @media (max-width:980px){ .wrap{ grid-template-columns:1fr; } }
+    .panel { background:var(--card); border:1px solid #1e2633; border-radius:14px; padding:14px; }
+    .panel h2 { font-size:14px; margin:0 0 10px; color:var(--muted); }
+    .controls { display:grid; gap:12px; }
+    label { display:grid; gap:6px; font-size:12px; color:var(--muted); }
+    select, input[type=number], input[type=range] { appearance:none; width:100%; background:#0e1520; color:var(--text); padding:10px 12px; border-radius:10px; border:1px solid #243149; outline:none; font-size:14px; }
+    input[type=range]{ height:36px; padding:0 2px; }
     .row { display:flex; gap:10px; }
     .row > * { flex:1; }
-
-    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; background: linear-gradient(180deg, #1c2535, #131b29); color: #eaf4ff; border:1px solid #22314a; padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600; user-select:none; }
-    .btn.primary { background: linear-gradient(180deg, #2986ff, #0f66d6); border-color:#0f66d6; }
-    .btn.success { background: linear-gradient(180deg, #22c55e, #16a34a); border-color:#15803d; }
-    .btn[disabled] { opacity:.6; cursor:not-allowed; }
-
-    .video-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 980px) { .video-grid { grid-template-columns: 1fr; } }
-
-    .video-card { position: relative; background:#000; border-radius:14px; overflow:hidden; border:1px solid #1e2633; }
-    .video-card header { position:absolute; inset:auto 0 0 0; background:linear-gradient(180deg, transparent, rgba(0,0,0,.5)); display:flex; justify-content:space-between; align-items:center; padding:8px 10px; gap:8px; border:none; }
-    .video-card header .tag { font-size:12px; color:#d2dbe7; background: rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); padding:4px 8px; border-radius:999px; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(180deg,#1c2535,#131b29); color:#eaf4ff; border:1px solid #22314a; padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600; user-select:none; }
+    .btn.primary { background:linear-gradient(180deg,#2986ff,#0f66d6); border-color:#0f66d6; }
+    .btn.success { background:linear-gradient(180deg,#22c55e,#16a34a); border-color:#15803d; }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+    .video-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    @media (max-width:980px){ .video-grid{ grid-template-columns:1fr; } }
+    .video-card{ position:relative; background:#000; border-radius:14px; overflow:hidden; border:1px solid #1e2633; }
+    .video-card header{ position:absolute; inset:auto 0 0 0; background:linear-gradient(180deg,transparent,rgba(0,0,0,.5)); display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; border:none; }
+    .video-card .tag{ font-size:12px; color:#d2dbe7; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); padding:4px 8px; border-radius:999px; }
     .mirrored { transform: scaleX(-1); }
-
-    video, canvas { width: 100%; height: auto; display:block; background:#000; }
-    .statline { margin-top:8px; font-size:12px; color: var(--muted); display:flex; gap: 12px; flex-wrap:wrap; }
-
-    .note { font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .warn { color:#ffd166; }
-    footer { max-width: 1200px; margin: 8px auto 24px; padding: 0 16px; }
+    video, canvas { width:100%; height:auto; display:block; background:#000; }
+    .statline{ margin-top:8px; font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap:wrap; }
+    .note{ font-size:12px; color:var(--muted); line-height:1.5; }
+    .warn{ color:#ffd166; }
+    footer{ max-width:1200px; margin:8px auto 24px; padding:0 16px; }
   </style>
 </head>
 <body>
   <header>
     <h1>Instant Replay (Gym)</h1>
-    <span class="pill">Works on Safari, Chrome, Edge (HTTPS required)</span>
-    <button id="popOutBtn" class="btn" style="margin-left:auto">↗ Open Standalone</button>
+    <span class="pill">HTTPS required • PWA-ready</span>
+    <button id="installBtn" class="btn" style="margin-left:auto;display:none">➕ Install App</button>
+    <button id="popOutBtn" class="btn">↗ Open Standalone</button>
   </header>
 
   <div class="wrap">
     <aside class="panel">
       <h2>Controls</h2>
       <div class="controls">
-        <label>
-          Camera
-          <select id="cameraSelect"></select>
-        </label>
+        <label>Camera<select id="cameraSelect"></select></label>
         <div class="row">
-          <label>
-            Resolution
-            <select id="resSelect">
-              <option value="640x360">640×360 (fast)</option>
-              <option value="1280x720" selected>1280×720</option>
-              <option value="1920x1080">1920×1080</option>
-            </select>
-          </label>
-          <label>
-            FPS
-            <select id="fpsSelect">
-              <option value="15">15</option>
-              <option value="24">24</option>
-              <option value="30" selected>30</option>
-              <option value="60">60</option>
-            </select>
-          </label>
+          <label>Capture Resolution<select id="resSelect">
+            <option value="640x360">640×360</option>
+            <option value="1280x720" selected>1280×720</option>
+            <option value="1920x1080">1920×1080</option>
+          </select></label>
+          <label>Capture FPS<select id="fpsSelect">
+            <option value="15">15</option>
+            <option value="24">24</option>
+            <option value="30" selected>30</option>
+            <option value="60">60</option>
+          </select></label>
         </div>
         <div class="row">
-          <label>
-            Delay (seconds)
+          <label>Delayed Resolution<select id="delayResSelect">
+            <option value="426x240">240p (fast)</option>
+            <option value="640x360">360p</option>
+            <option value="854x480">480p</option>
+            <option value="1280x720" selected>720p</option>
+            <option value="1920x1080">1080p</option>
+          </select></label>
+          <label>Preview Size<select id="previewSizeSelect">
+            <option value="full" selected>Full</option>
+            <option value="half">Half</option>
+            <option value="quarter">Quarter</option>
+            <option value="hidden">Hidden</option>
+          </select></label>
+        </div>
+        <div class="row">
+          <label>Delay (seconds)
             <input id="delayRange" type="range" min="0" max="120" value="6" step="1" />
             <div class="statline"><span>Current delay: <strong id="delayVal">6s</strong> · Max 120s</span></div>
           </label>
-          <label>
-            Delay Engine
-            <select id="engineSelect">
-              <option value="auto" selected>Auto (recommended)</option>
-              <option value="mse">Compressed (long delay)</option>
-              <option value="canvas">Memory (short)</option>
-            </select>
-          </label>
+          <label>Delay Engine<select id="engineSelect">
+            <option value="auto" selected>Auto</option>
+            <option value="mse">Compressed (long)</option>
+            <option value="canvas">Memory (short)</option>
+          </select></label>
         </div>
         <div class="row">
           <button id="startBtn" class="btn primary">▶ Start Camera</button>
@@ -106,23 +102,20 @@
           <button id="mirrorBtn" class="btn">🪞 Toggle Mirror</button>
         </div>
         <hr style="border:none;border-top:1px solid #1e2633; margin:4px 0;"/>
-        <h2>Save a Clip (optional)</h2>
-        <label>
-          Clip length (seconds)
-          <input id="clipLen" type="number" min="3" max="30" value="8" />
-        </label>
+        <h2>Save a Clip</h2>
+        <label>Clip length (seconds)<input id="clipLen" type="number" min="3" max="30" value="8" /></label>
         <div class="row">
-          <button id="recordClipBtn" class="btn success" disabled>⏺️ Record from Delayed View</button>
+          <button id="recordClipBtn" class="btn success" disabled>⏺️ Save last N seconds</button>
           <a id="downloadLink" class="btn" style="display:none">⬇️ Download</a>
         </div>
-        <p class="note">The clip recorder captures the delayed playback (what athletes are watching) into a downloadable file right on the device.</p>
+        <p class="note" id="clipNote">In long-delay mode, clips are cut from the internal buffer (no extra recording). In short-delay mode, we record the canvas directly.</p>
       </div>
     </aside>
 
     <main class="panel">
       <h2>Preview</h2>
       <div class="video-grid">
-        <div class="video-card">
+        <div class="video-card" id="liveCard">
           <video id="live" autoplay playsinline muted></video>
           <header>
             <span class="tag">Live Camera</span>
@@ -143,19 +136,18 @@
   </div>
 
   <footer>
-    <p class="note">
-      <strong>Notes:</strong> This runs fully in the browser (no uploads). Works on Safari, Chrome, and Edge over HTTPS. If you change cameras or resolution, hit <em>Start Camera</em> again. For best performance, keep resolution at 720p and 24–30 FPS. 60 FPS and long delays up to 120s are supported on stronger devices.
-    </p>
-    <p class="note warn" id="embedWarning" style="display:none">You're viewing this inside an embedded viewer, which can block camera access. Tap <strong>"Open Standalone"</strong> above to open it in its own tab, or deploy the file to an HTTPS site and open it directly (not inside a preview frame). Wix's HTML embed often sandboxes camera; linking out is most reliable.</p>
-    <p class="note warn">If you see a black screen, make sure the page is served over HTTPS and you've granted camera permissions. Some browsers require a tap before video can start.</p>
+    <p class="note"><strong>Notes:</strong> Works on Safari, Chrome, Edge over HTTPS. If embedded (e.g., Wix HTML iFrame), camera may be blocked—use the <em>Open Standalone</em> button or link out to a dedicated URL.</p>
+    <p class="note warn" id="embedWarning" style="display:none">Embedded viewer detected. Camera prompts are often blocked. Open standalone.</p>
   </footer>
 
   <script>
   (() => {
+    // --- Elements
     const liveEl = document.getElementById('live');
     const delayedVideo = document.getElementById('delayedVideo');
     const delayedCanvas = document.getElementById('delayedCanvas');
     const dctx = delayedCanvas.getContext('2d');
+    const liveCard = document.getElementById('liveCard');
 
     const startBtn = document.getElementById('startBtn');
     const stopBtn = document.getElementById('stopBtn');
@@ -165,6 +157,8 @@
     const cameraSelect = document.getElementById('cameraSelect');
     const resSelect = document.getElementById('resSelect');
     const fpsSelect = document.getElementById('fpsSelect');
+    const delayResSelect = document.getElementById('delayResSelect');
+    const previewSizeSelect = document.getElementById('previewSizeSelect');
     const engineSelect = document.getElementById('engineSelect');
 
     const delayRange = document.getElementById('delayRange');
@@ -172,325 +166,187 @@
     const clipLen = document.getElementById('clipLen');
     const recordClipBtn = document.getElementById('recordClipBtn');
     const downloadLink = document.getElementById('downloadLink');
+    const clipNote = document.getElementById('clipNote');
+
+    const installBtn = document.getElementById('installBtn');
+    const popOutBtn = document.getElementById('popOutBtn');
 
     const statsEl = document.getElementById('stats');
     const liveInfo = document.getElementById('liveInfo');
     const delayInfo = document.getElementById('delayInfo');
 
-    // State
-    let stream = null;
-    let facingMode = 'environment';
-    let mirrored = false;
-
-    let targetW = 1280, targetH = 720;
-    let fps = 30;
+    // --- Global state
+    let stream = null; let facingMode = 'environment'; let mirrored = false;
+    let capW = 1280, capH = 720, fps = 30; // capture settings
+    let delayW = 1280, delayH = 720;       // delayed processing resolution (your priority)
     let delaySeconds = parseInt(delayRange.value, 10);
 
-    // Canvas (short-delay) engine state
-    const MAX_DELAY_SECONDS = 120; // hard cap
-    let bufferCanvases = [];
-    let bufferSize = 0;
-    let writeIndex = 0;
-    let framesSeen = 0;
+    // Processing canvas (we always draw into this at delay resolution)
+    const procCanvas = document.createElement('canvas');
+    const pctx = procCanvas.getContext('2d');
+
+    // Canvas engine (short delay)
+    const MAX_DELAY_SECONDS = 120; let buffer = []; let bufferSize = 0; let writeIndex = 0; let framesSeen = 0;
     let captureRAF = null; let captureInterval = null; let playbackInterval = null;
 
-    // MSE (compressed long-delay) engine state
-    let mediaSource = null; let sourceBuffer = null; let recorder = null; let recMimePair = null; let recTimeslice = 1000; // 1s chunks
-    const chunkQueue = []; // raw blobs from recorder (newest at end)
-    let appendedCount = 0; // how many chunks have been appended to MSE
-    let mseStarted = false; // whether playback has started
+    // MSE engine (long delay)
+    let mediaSource = null, sourceBuffer = null, recorder = null, recMime = '', recTimeslice = 1000;
+    const chunkQueue = []; let appendedCount = 0; let mseStarted = false;
 
-    // Clip recorder (captures the delayed element itself)
-    let clipRecorder = null;
+    // PWA install prompt
+    let deferredPrompt = null;
 
-    // ---------- Utilities ----------
-    function parseRes(val) { const [w,h] = val.split('x').map(Number); return { w, h }; }
-    function setCanvasSize(w, h) { delayedCanvas.width = w; delayedCanvas.height = h; }
+    // --- Helpers
+    const parseRes = v => { const [w,h] = v.split('x').map(Number); return { w, h }; };
+    function setDelayResolution(w,h){ delayW=w; delayH=h; procCanvas.width=w; procCanvas.height=h; delayedCanvas.width=w; delayedCanvas.height=h; }
+    function setPreviewSize(sz){ const map={ full:'', half:'scale(0.5)', quarter:'scale(0.25)', hidden:'scale(0)'}; liveCard.style.transformOrigin='top left'; liveCard.style.transform = map[sz]||''; liveCard.style.height = (sz==='hidden')? '0px' : ''; }
+    function pickMimePair(){
+      const pairs = [ 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm' ];
+      for (const m of pairs){ if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) return m; }
+      return '';
+    }
+    async function listCameras(){ try{ const devices = await navigator.mediaDevices.enumerateDevices(); const vids = devices.filter(d=>d.kind==='videoinput'); cameraSelect.innerHTML=''; vids.forEach((d,i)=>{ const o=document.createElement('option'); o.value=d.deviceId; o.textContent=d.label||`Camera ${i+1}`; cameraSelect.appendChild(o); }); if(!vids.length){ const o=document.createElement('option'); o.value=''; o.textContent='No cameras found'; cameraSelect.appendChild(o);} }catch(e){ console.warn('enumerateDevices failed',e);} }
 
-    function pickMimePair() {
-      const pairs = [
-        { rec: 'video/mp4', mse: 'video/mp4; codecs="avc1.42E01E,mp4a.40.2"' },
-        { rec: 'video/webm;codecs=vp9,opus', mse: 'video/webm;codecs=vp9,opus' },
-        { rec: 'video/webm;codecs=vp8,opus', mse: 'video/webm;codecs=vp8,opus' },
-        { rec: 'video/webm', mse: 'video/webm' }
-      ];
-      for (const p of pairs) {
-        const recOK = (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(p.rec));
-        const mseOK = (window.MediaSource && MediaSource.isTypeSupported && MediaSource.isTypeSupported(p.mse));
-        if (recOK && mseOK) return p;
-      }
-      return null;
+    function stopLoops(){ if(captureRAF){ liveEl.cancelVideoFrameCallback?.(captureRAF); captureRAF=null; } if(captureInterval){ clearInterval(captureInterval); captureInterval=null;} if(playbackInterval){ clearInterval(playbackInterval); playbackInterval=null;} }
+
+    function stopEverything(){ stopLoops(); if(recorder){ try{recorder.stop();}catch{} recorder=null;} if(mediaSource){ try{mediaSource.endOfStream();}catch{} mediaSource=null;} if(sourceBuffer){ try{sourceBuffer.abort();}catch{} sourceBuffer=null;} chunkQueue.length=0; appendedCount=0; mseStarted=false; if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } startBtn.disabled=false; stopBtn.disabled=true; recordClipBtn.disabled=true; downloadLink.style.display='none'; delayInfo.textContent='stopped'; liveInfo.textContent='—'; statsEl.textContent='—'; delayedVideo.removeAttribute('src'); delayedVideo.srcObject=null; delayedVideo.style.display=''; dctx.clearRect(0,0,delayedCanvas.width,delayedCanvas.height); delayedCanvas.style.display='none'; }
+
+    async function startCamera(){ stopEverything(); ({w:capW,h:capH}=parseRes(resSelect.value)); fps=parseInt(fpsSelect.value,10); const {w:dw,h:dh}=parseRes(delayResSelect.value); setDelayResolution(dw,dh); delaySeconds=parseInt(delayRange.value,10);
+      const video={ width:{ideal:capW}, height:{ideal:capH}, frameRate:{ideal:fps} }; if(cameraSelect.value){ video.deviceId={exact:cameraSelect.value}; } else { video.facingMode={ideal:facingMode}; }
+      try{
+        stream = await navigator.mediaDevices.getUserMedia({ audio:false, video });
+        liveEl.srcObject = stream; liveEl.muted = true; await liveEl.play().catch(()=>{});
+        listCameras(); startBtn.disabled=true; stopBtn.disabled=false; recordClipBtn.disabled=false;
+        liveEl.classList.toggle('mirrored', mirrored); delayedCanvas.classList.toggle('mirrored', mirrored); delayedVideo.classList.toggle('mirrored', mirrored);
+        if(window.top!==window.self){ const warn=document.getElementById('embedWarning'); if(warn) warn.style.display='block'; }
+        const desired = engineSelect.value; const engine = (desired==='auto') ? ((delaySeconds>25 && pickMimePair())? 'mse' : 'canvas') : desired;
+        if(engine==='mse') startMSEEngine(); else startCanvasEngine();
+      }catch(err){ console.error(err); const map={ NotAllowedError:'Permission blocked. Click the camera icon in the address bar and allow access.', NotFoundError:'No camera found. Try switching devices.', NotReadableError:'Camera is in use by another app. Close other apps.', OverconstrainedError:'Requested resolution/FPS not supported. Try lowering it.', SecurityError:'Camera requires HTTPS or localhost.'}; alert(map[err.name]||'Could not start camera. Make sure you are on HTTPS and granted camera permission.'); }
     }
 
-    async function listCameras() {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const vids = devices.filter(d => d.kind === 'videoinput');
-        cameraSelect.innerHTML = '';
-        vids.forEach((d, i) => {
-          const opt = document.createElement('option');
-          opt.value = d.deviceId; opt.textContent = d.label || `Camera ${i+1}`; cameraSelect.appendChild(opt);
-        });
-        if (!vids.length) {
-          const opt = document.createElement('option'); opt.value = ''; opt.textContent = 'No cameras found'; cameraSelect.appendChild(opt);
-        }
-      } catch (e) { console.warn('enumerateDevices failed (permissions?)', e); }
+    // Draw one frame into processing canvas at delay resolution
+    function drawToProc(){ pctx.drawImage(liveEl, 0, 0, procCanvas.width, procCanvas.height); }
+
+    // ---- Canvas engine (short delay, adjustable resolution)
+    function startCanvasEngine(){ delayedVideo.style.display='none'; delayedCanvas.style.display='';
+      // Compute buffer size: cap at 30fps internally to save memory
+      const bufFPS = Math.min(fps, 30); bufferSize = Math.max(1, Math.round(Math.min(delaySeconds, MAX_DELAY_SECONDS) * bufFPS));
+      buffer = new Array(bufferSize).fill(null).map(()=>{ const c=document.createElement('canvas'); c.width=delayW; c.height=delayH; return c; }); writeIndex=0; framesSeen=0;
+      const intervalMs = Math.max(1000/bufFPS, 16); let last=0;
+      function captureLoop(now){ if(!last || (now-last)>=intervalMs-2){ drawToProc(); const c = buffer[writeIndex]; c.getContext('2d').drawImage(procCanvas,0,0,delayW,delayH); writeIndex=(writeIndex+1)%bufferSize; framesSeen++; last=now; } captureRAF = liveEl.requestVideoFrameCallback(captureLoop); }
+      if(liveEl.requestVideoFrameCallback){ captureRAF = liveEl.requestVideoFrameCallback(captureLoop); } else { captureInterval = setInterval(()=>{ drawToProc(); const c=buffer[writeIndex]; c.getContext('2d').drawImage(procCanvas,0,0,delayW,delayH); writeIndex=(writeIndex+1)%bufferSize; framesSeen++; }, intervalMs); }
+      playbackInterval = setInterval(()=>{ const bufFPS = Math.min(fps, 30); const delayFrames = Math.max(0, Math.min(bufferSize-1, Math.round(Math.min(delaySeconds,MAX_DELAY_SECONDS)*bufFPS))); const have = Math.min(framesSeen, bufferSize); if(have<=delayFrames){ delayInfo.textContent = `warming up… ${Math.max(0, delayFrames-have)}f`; return;} const read = (writeIndex - delayFrames - 1 + bufferSize) % bufferSize; dctx.drawImage(buffer[read], 0,0,delayW,delayH); delayInfo.textContent = `${delaySeconds}s behind (memory)`; renderStats('Canvas', have, bufferSize, bufFPS); }, intervalMs);
+      clipNote.textContent = 'Short-delay engine: clip is recorded from the delayed canvas (works where supported).';
     }
 
-    function rebuildCanvasBuffer() {
-      // Compute safe internal buffer resolution & fps to control memory for long delays
-      const targetFrames = Math.max(1, Math.round(Math.min(fps, 30) * Math.min(delaySeconds, MAX_DELAY_SECONDS))); // buffer fps capped 30
-      // Memory budget ~ 80 MB (heuristic). Each frame ~ w*h*4 bytes. Compute scale to fit.
-      const budgetBytes = 80 * 1024 * 1024; // 80MB
-      let w = targetW, h = targetH;
-      let bytesPerFrame = w * h * 4;
-      let needed = bytesPerFrame * targetFrames;
-      let scale = 1;
-      while (needed > budgetBytes && scale > 0.2) { // progressively downscale
-        scale *= 0.8; w = Math.max(160, Math.round(targetW * scale)); h = Math.max(90, Math.round(targetH * scale));
-        bytesPerFrame = w * h * 4; needed = bytesPerFrame * targetFrames;
-      }
-      bufferSize = targetFrames;
-      bufferCanvases = new Array(bufferSize).fill(null).map(() => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; });
-      writeIndex = 0; framesSeen = 0;
-      setCanvasSize(w, h);
+    function renderStats(engine, have, size, bufFPS){ liveInfo.textContent = `${capW}×${capH}@${fps}`; const delayFrames = Math.round(Math.min(delaySeconds,MAX_DELAY_SECONDS)*bufFPS); statsEl.textContent = `Engine: ${engine} · Delay res: ${delayW}×${delayH} · Buffer: ${have}/${size} · Current delay: ${delayFrames}f (${delaySeconds}s)`; }
+
+    // ---- MSE engine (long delay, from processing canvas stream)
+    function startMSEEngine(){ const mime = pickMimePair(); if(!mime){ console.warn('No suitable MediaRecorder type, falling back.'); startCanvasEngine(); return; } recMime = mime; delayedVideo.style.display=''; delayedCanvas.style.display='none';
+      // Record the processed canvas so the delayed resolution is exactly what you chose
+      const bufFPS = Math.min(fps, 30); const streamOut = procCanvas.captureStream(bufFPS);
+      try{ recorder = new MediaRecorder(streamOut, { mimeType: recMime, videoBitsPerSecond: 2500000 }); }catch(e){ console.warn('MediaRecorder init failed',e); alert('Recording pipeline not supported here. Falling back.'); startCanvasEngine(); return; }
+      mediaSource = new MediaSource(); delayedVideo.src = URL.createObjectURL(mediaSource);
+      mediaSource.addEventListener('sourceopen', ()=>{ try{ sourceBuffer = mediaSource.addSourceBuffer(recMime); }catch(e){ console.error('addSourceBuffer failed',e); alert('This browser does not support compressed delay mode.'); stopEverything(); return;} sourceBuffer.mode='sequence'; sourceBuffer.addEventListener('updateend', pumpMSE); }, { once:true });
+
+      recorder.ondataavailable = e=>{ if(e.data && e.data.size){ chunkQueue.push(e.data); trimChunks(); pumpMSE(); } };
+      recorder.start(recTimeslice);
+
+      // capture frames into processor continuously
+      const intervalMs = Math.max(1000/bufFPS, 16); if(liveEl.requestVideoFrameCallback){ const loop=(now)=>{ drawToProc(); captureRAF = liveEl.requestVideoFrameCallback(loop); }; captureRAF = liveEl.requestVideoFrameCallback(loop); } else { captureInterval = setInterval(drawToProc, intervalMs); }
+      playbackInterval = setInterval(()=>{ pumpMSE(); renderStats('MSE', chunkQueue.length, Math.round((delaySeconds+10)*1000/recTimeslice), bufFPS); }, 500);
+      clipNote.textContent = 'Long-delay engine: clip is cut from the internal encoded buffer (more stable on iOS).';
     }
 
-    // ---------- Start/Stop camera ----------
-    async function startCamera() {
-      stopEverything();
-      ({w: targetW, h: targetH} = parseRes(resSelect.value));
-      fps = parseInt(fpsSelect.value, 10);
-      delaySeconds = parseInt(delayRange.value, 10);
+    function pumpMSE(){ if(!sourceBuffer || !mediaSource || sourceBuffer.updating) return; const delayChunks = Math.max(0, Math.round(delaySeconds*1000/recTimeslice)); if(!mseStarted){ if(chunkQueue.length <= delayChunks+1){ delayInfo.textContent = `warming up… ${delayChunks - chunkQueue.length + 1}s`; return; } mseStarted = true; appendedCount = 0; }
+      const targetIdx = Math.max(0, chunkQueue.length - delayChunks - 1); if(appendedCount <= targetIdx){ const blob = chunkQueue[appendedCount]; const fr = new FileReader(); fr.onload = ()=>{ try{ sourceBuffer.appendBuffer(new Uint8Array(fr.result)); appendedCount++; delayedVideo.play().catch(()=>{}); delayInfo.textContent = `${delaySeconds}s behind (compressed)`; }catch(e){ console.warn('appendBuffer',e); } }; fr.readAsArrayBuffer(blob); } }
 
-      // Constraints
-      const video = { width: { ideal: targetW }, height: { ideal: targetH }, frameRate: { ideal: fps } };
-      if (cameraSelect.value) video.deviceId = { exact: cameraSelect.value }; else video.facingMode = { ideal: facingMode };
-      const constraints = { audio: false, video };
+    function trimChunks(){ const cushion=10; const maxChunks = Math.round((delaySeconds + cushion)*1000/recTimeslice); if(chunkQueue.length>maxChunks){ const removeCount = chunkQueue.length - maxChunks; chunkQueue.splice(0, removeCount); appendedCount = Math.max(0, appendedCount - removeCount); try{ const ct = delayedVideo.currentTime; const removeTo = Math.max(0, ct - cushion); if(sourceBuffer && !sourceBuffer.updating) sourceBuffer.remove(0, removeTo); }catch{} } }
 
-      try {
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        liveEl.srcObject = stream; liveEl.muted = true; liveEl.playsInline = true; await liveEl.play().catch(()=>{});
-        listCameras();
-        startBtn.disabled = true; stopBtn.disabled = false; recordClipBtn.disabled = false;
-        liveEl.classList.toggle('mirrored', mirrored);
-
-        const desiredEngine = engineSelect.value;
-        const engine = (desiredEngine === 'auto') ? ((delaySeconds > 25 && pickMimePair()) ? 'mse' : 'canvas') : desiredEngine;
-
-        if (engine === 'mse') {
-          startMSEEngine();
-        } else {
-          startCanvasEngine();
-        }
-
-        // If inside iframe, show embed warning (Wix often blocks camera in HTML embed widgets)
-        if (window.top !== window.self) { const warn = document.getElementById('embedWarning'); if (warn) warn.style.display = 'block'; }
-      } catch (err) {
-        console.error(err);
-        const map = {
-          NotAllowedError: 'Permission blocked. Click the camera icon in the address bar and allow access.',
-          NotFoundError: 'No camera found. Try switching devices.',
-          NotReadableError: 'Camera is in use by another app. Close other apps and try again.',
-          OverconstrainedError: 'The requested resolution/FPS is not supported. Try lowering it.',
-          SecurityError: 'Camera access is only available on HTTPS or localhost.'
-        };
-        alert(map[err.name] || 'Could not start camera. Make sure you are on HTTPS and granted camera permission.');
+    // ---- Clip saving (robust paths)
+    async function saveClip(){ const seconds = Math.max(3, Math.min(30, parseInt(clipLen.value||'8',10))); downloadLink.style.display='none';
+      if(delayedCanvas.style.display!=='none'){ // Canvas engine path
+        if(!('captureStream' in delayedCanvas) || !window.MediaRecorder){ alert('Recording not supported in this browser for canvas mode. Try long-delay mode.'); return; }
+        const mime = pickMimePair() || 'video/webm'; const s = delayedCanvas.captureStream(Math.min(fps,30)); const chunks=[]; let cr;
+        try{ cr = new MediaRecorder(s, { mimeType: mime }); }catch(e){ try{ cr = new MediaRecorder(s); }catch(e2){ alert('Could not start clip recorder.'); return; } }
+        cr.ondataavailable = e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+        cr.onstop = ()=>{ const blob = new Blob(chunks, { type: cr.mimeType || mime }); offerDownload(blob); };
+        cr.start(); recordClipBtn.disabled=true; recordClipBtn.textContent='⏺️ Recording…'; await new Promise(r=>setTimeout(r, seconds*1000)); cr.stop(); recordClipBtn.disabled=false; recordClipBtn.textContent='⏺️ Save last N seconds';
+      } else { // MSE engine path — cut from encoded chunk queue
+        if(!chunkQueue.length){ alert('No data yet for clip.'); return; }
+        const need = Math.max(1, Math.round(seconds*1000/recTimeslice)); const parts = chunkQueue.slice(-need); const type = recMime || (parts[0] && parts[0].type) || 'video/webm'; const blob = new Blob(parts, { type }); offerDownload(blob);
       }
     }
 
-    function stopEverything() {
-      // Stop loops/recorders
-      if (captureRAF) { liveEl.cancelVideoFrameCallback?.(captureRAF); captureRAF = null; }
-      if (captureInterval) { clearInterval(captureInterval); captureInterval = null; }
-      if (playbackInterval) { clearInterval(playbackInterval); playbackInterval = null; }
-      if (recorder) { try { recorder.stop(); } catch {} recorder = null; }
-      if (mediaSource) { try { mediaSource.endOfStream(); } catch {} mediaSource = null; }
-      if (sourceBuffer) { try { sourceBuffer.abort(); } catch {} sourceBuffer = null; }
-      chunkQueue.length = 0; appendedCount = 0; mseStarted = false;
-
-      // Stop tracks
-      if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
-
-      startBtn.disabled = false; stopBtn.disabled = true; recordClipBtn.disabled = true; downloadLink.style.display = 'none';
-      delayInfo.textContent = 'stopped'; liveInfo.textContent = '—'; statsEl.textContent = '—';
-
-      // Reset delayed view elements
-      delayedVideo.removeAttribute('src'); if (delayedVideo.srcObject) delayedVideo.srcObject = null; delayedVideo.style.display = '';
-      dctx && dctx.clearRect(0,0,delayedCanvas.width, delayedCanvas.height); delayedCanvas.style.display = 'none';
+    function offerDownload(blob){ const url = URL.createObjectURL(blob); const ts=new Date().toISOString().replace(/[:.]/g,'-'); const ext = (blob.type && blob.type.includes('mp4'))? 'mp4':'webm'; downloadLink.href=url; downloadLink.download=`replay-${ts}.${ext}`; downloadLink.textContent='⬇️ Download clip'; downloadLink.style.display='inline-flex'; // Revoke after user click
+      downloadLink.onclick = () => { setTimeout(()=>URL.revokeObjectURL(url), 4000); };
     }
 
-    // ---------- Canvas (short delay) engine ----------
-    function startCanvasEngine() {
-      delayedVideo.style.display = 'none'; delayedCanvas.style.display = '';
-      rebuildCanvasBuffer();
+    // ---- UI bindings
+    startBtn.addEventListener('click', startCamera); stopBtn.addEventListener('click', stopEverything);
+    flipBtn.addEventListener('click', ()=>{ facingMode = (facingMode==='environment')? 'user':'environment'; startCamera(); });
+    mirrorBtn.addEventListener('click', ()=>{ mirrored=!mirrored; [liveEl,delayedCanvas,delayedVideo].forEach(el=>el.classList.toggle('mirrored', mirrored)); });
+    recordClipBtn.addEventListener('click', saveClip);
 
-      const useRVFC = !!liveEl.requestVideoFrameCallback; const intervalMs = Math.max(1000 / Math.min(fps, 30), 16);
-      let lastCapture = 0;
+    delayRange.addEventListener('input', ()=>{ delaySeconds = parseInt(delayRange.value,10); delayVal.textContent = `${delaySeconds}s`; });
+    resSelect.addEventListener('change', ()=>{ if(stream) startCamera(); });
+    fpsSelect.addEventListener('change', ()=>{ if(stream) startCamera(); });
+    delayResSelect.addEventListener('change', ()=>{ if(stream) startCamera(); });
+    cameraSelect.addEventListener('change', ()=>{ if(stream) startCamera(); });
+    engineSelect.addEventListener('change', ()=>{ if(stream) startCamera(); });
+    previewSizeSelect.addEventListener('change', ()=> setPreviewSize(previewSizeSelect.value));
 
-      function writeOneFrame() {
-        if (!stream) return;
-        const c = bufferCanvases[writeIndex]; const cctx = c.getContext('2d');
-        cctx.drawImage(liveEl, 0, 0, c.width, c.height);
-        writeIndex = (writeIndex + 1) % bufferSize; framesSeen++;
-      }
+    // Device list (labels after first permission)
+    listCameras(); setPreviewSize(previewSizeSelect.value);
 
-      function drawDelayed() {
-        const delayFrames = Math.max(0, Math.min(bufferSize-1, Math.round(Math.min(delaySeconds, MAX_DELAY_SECONDS) * Math.min(fps,30))));
-        const haveFrames = Math.min(framesSeen, bufferSize);
-        if (haveFrames <= delayFrames) { delayInfo.textContent = `warming up… ${Math.max(0, delayFrames - haveFrames)}f`; return; }
-        const readIndex = (writeIndex - delayFrames - 1 + bufferSize) % bufferSize;
-        const src = bufferCanvases[readIndex]; dctx.drawImage(src, 0, 0, delayedCanvas.width, delayedCanvas.height);
-        delayInfo.textContent = `${delaySeconds}s behind (memory)`;
-      }
+    // Pop-out (useful when embedded/sandboxed)
+    popOutBtn.addEventListener('click', ()=> window.open(window.location.href, '_blank'));
 
-      function renderStats() {
-        const delayFrames = Math.round(Math.min(delaySeconds, MAX_DELAY_SECONDS) * Math.min(fps,30));
-        const have = Math.min(framesSeen, bufferSize);
-        liveInfo.textContent = `${targetW}×${targetH}@${fps}`;
-        statsEl.textContent = `Engine: Canvas · Buffer: ${have}/${bufferSize} frames · Current delay: ${delayFrames}f (${delaySeconds}s)`;
-      }
-
-      if (useRVFC) {
-        const loop = (now) => { if (!lastCapture || (now - lastCapture) >= intervalMs - 2) { writeOneFrame(); lastCapture = now; } captureRAF = liveEl.requestVideoFrameCallback(loop); };
-        captureRAF = liveEl.requestVideoFrameCallback(loop);
-      } else { captureInterval = setInterval(writeOneFrame, intervalMs); }
-      playbackInterval = setInterval(() => { drawDelayed(); renderStats(); }, intervalMs);
-
-      // Mirror state
-      delayedCanvas.classList.toggle('mirrored', mirrored);
+    // --- PWA: service worker register
+    if('serviceWorker' in navigator){
+      const base = (location.pathname.endsWith('/')? location.pathname : location.pathname.replace(/[^/]*$/, ''));
+      const swPath = base + 'sw.js';
+      navigator.serviceWorker.register(swPath).catch(console.warn);
     }
+    window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt = e; installBtn.style.display='inline-flex'; });
+    installBtn.addEventListener('click', async ()=>{ if(!deferredPrompt) return; deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; installBtn.style.display='none'; });
 
-    // ---------- MSE (compressed long delay) engine ----------
-    function startMSEEngine() {
-      recMimePair = pickMimePair();
-      if (!recMimePair) { console.warn('No common MediaRecorder/MediaSource MIME. Falling back to canvas.'); startCanvasEngine(); return; }
-
-      // Build delayed video MediaSource
-      mediaSource = new MediaSource();
-      const msURL = URL.createObjectURL(mediaSource);
-      delayedVideo.src = msURL; delayedVideo.style.display = ''; delayedCanvas.style.display = 'none';
-      delayedVideo.classList.toggle('mirrored', mirrored);
-
-      mediaSource.addEventListener('sourceopen', () => {
-        try { sourceBuffer = mediaSource.addSourceBuffer(recMimePair.mse); }
-        catch(e){ console.error('addSourceBuffer failed', e); alert('Your browser does not support this delay mode. Try Chrome or Safari.'); stopEverything(); return; }
-        sourceBuffer.mode = 'sequence';
-        sourceBuffer.addEventListener('updateend', onSBUpdateEnd);
-      }, { once: true });
-
-      // Start the recorder that feeds chunkQueue
-      try { recorder = new MediaRecorder(stream, { mimeType: recMimePair.rec, videoBitsPerSecond: 2500000 }); }
-      catch(e){ console.warn('MediaRecorder init failed', e); alert('Recording pipeline not supported here. Falling back to short-delay mode.'); startCanvasEngine(); return; }
-
-      recorder.ondataavailable = (e) => { if (e.data && e.data.size) { chunkQueue.push(e.data); pumpMSE(); trimQueues(); }};
-      recorder.start(recTimeslice); // fire chunks every second
-
-      // Periodically update stats and ensure appending keeps pace
-      playbackInterval = setInterval(() => { pumpMSE(); renderMSEStats(); }, 500);
-
-      async function pumpMSE() {
-        if (!sourceBuffer || !mediaSource) return;
-        if (sourceBuffer.updating) return;
-
-        const delayChunks = Math.max(0, Math.round(delaySeconds * 1000 / recTimeslice));
-        // Only start once we have enough backlog
-        if (!mseStarted) {
-          if (chunkQueue.length <= delayChunks + 1) { delayInfo.textContent = `warming up… ${delayChunks - chunkQueue.length + 1}s`; return; }
-          mseStarted = true; // will begin appending from (length - delayChunks)
-          appendedCount = 0; // reset timeline
-        }
-
-        // Determine next chunk to append so that playback stays delaySeconds behind
-        const targetAppendIndex = Math.max(0, chunkQueue.length - delayChunks - 1);
-        if (appendedCount <= targetAppendIndex) {
-          const nextBlob = chunkQueue[appendedCount];
-          if (!nextBlob) return; // nothing ready
-          const fr = new FileReader();
-          fr.onload = () => {
-            try { sourceBuffer.appendBuffer(new Uint8Array(fr.result)); appendedCount++; }
-            catch(e){ console.warn('appendBuffer error', e); }
-          };
-          fr.readAsArrayBuffer(nextBlob);
-        }
-
-        // Ensure the video is playing
-        if (delayedVideo.paused && mediaSource.readyState === 'open') { delayedVideo.play().catch(()=>{}); }
-        delayInfo.textContent = `${delaySeconds}s behind (compressed)`;
-      }
-
-      function trimQueues() {
-        // Keep at most (delay + cushion) seconds of chunks in memory
-        const cushion = 10; // seconds extra
-        const maxChunks = Math.round((delaySeconds + cushion) * 1000 / recTimeslice);
-        if (chunkQueue.length > maxChunks) {
-          const removeCount = chunkQueue.length - maxChunks;
-          chunkQueue.splice(0, removeCount);
-          appendedCount = Math.max(0, appendedCount - removeCount);
-          // Trim SourceBuffer if we can
-          try {
-            const ct = delayedVideo.currentTime;
-            const removeTo = Math.max(0, ct - cushion);
-            if (sourceBuffer && !sourceBuffer.updating) sourceBuffer.remove(0, removeTo);
-          } catch {}
-        }
-      }
-
-      function renderMSEStats() {
-        liveInfo.textContent = `${targetW}×${targetH}@${fps}`;
-        statsEl.textContent = `Engine: MSE · Chunks: ${chunkQueue.length} stored · Appended: ${appendedCount} · Delay target: ${delaySeconds}s`;
-      }
-    }
-
-    // ---------- Clip recording from delayed view ----------
-    async function recordClipFromDelayed() {
-      const el = (delayedCanvas.style.display !== 'none') ? delayedCanvas : delayedVideo;
-      if (!('captureStream' in el)) { alert('Recording not supported in this browser.'); return; }
-      const lengthSec = Math.max(3, Math.min(30, parseInt(clipLen.value||'8', 10)));
-
-      // Pick a recording type that the browser supports
-      let mime = '';
-      const candidates = ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-      for (const m of candidates) { if (MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m)) { mime = m; break; } }
-
-      const s = el.captureStream(Math.min(fps, 60));
-      const chunks = []; let cr;
-      try { cr = new MediaRecorder(s, mime ? { mimeType: mime } : undefined); } catch (e) { cr = new MediaRecorder(s); }
-      cr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
-      cr.onstop = () => {
-        const blob = new Blob(chunks, { type: cr.mimeType || mime || 'video/webm' });
-        const url = URL.createObjectURL(blob);
-        downloadLink.href = url; const ts = new Date().toISOString().replace(/[:.]/g, '-'); const ext = (blob.type.includes('mp4')) ? 'mp4' : 'webm';
-        downloadLink.download = `replay-${ts}.${ext}`; downloadLink.textContent = '⬇️ Download clip'; downloadLink.style.display = 'inline-flex';
-      };
-      cr.start(); recordClipBtn.disabled = true; recordClipBtn.textContent = '⏺️ Recording…';
-      await new Promise(res => setTimeout(res, lengthSec * 1000)); cr.stop();
-      recordClipBtn.disabled = false; recordClipBtn.textContent = '⏺️ Record from Delayed View';
-    }
-
-    // ---------- UI bindings ----------
-    startBtn.addEventListener('click', startCamera);
-    stopBtn.addEventListener('click', stopEverything);
-    flipBtn.addEventListener('click', () => { facingMode = (facingMode === 'environment') ? 'user' : 'environment'; startCamera(); });
-    mirrorBtn.addEventListener('click', () => { mirrored = !mirrored; liveEl.classList.toggle('mirrored', mirrored); delayedVideo.classList.toggle('mirrored', mirrored); delayedCanvas.classList.toggle('mirrored', mirrored); });
-    recordClipBtn.addEventListener('click', recordClipFromDelayed);
-
-    delayRange.addEventListener('input', () => { delaySeconds = parseInt(delayRange.value, 10); delayVal.textContent = `${delaySeconds}s`; });
-    resSelect.addEventListener('change', () => { if (stream) startCamera(); });
-    fpsSelect.addEventListener('change', () => { if (stream) startCamera(); });
-    cameraSelect.addEventListener('change', () => { if (stream) startCamera(); });
-    engineSelect.addEventListener('change', () => { if (stream) startCamera(); });
-
-    // Device list (labels populate after first permission grant)
-    listCameras();
-
-    // Pop-out for embedded environments (e.g., Wix HTML embed)
-    const popOutBtn = document.getElementById('popOutBtn');
-    if (popOutBtn) popOutBtn.addEventListener('click', () => window.open(window.location.href, '_blank'));
-
-    // Expose for quick debugging
+    // Expose debug
     window.__replay = { startCamera, stopEverything };
   })();
   </script>
+
+  <!-- =====================
+       PWA FILES TO CREATE
+       =====================
+  Create two extra files next to this index.html on your host:
+
+  1) manifest.webmanifest
+  {
+    "name": "Instant Replay (Gym)",
+    "short_name": "Replay",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0b0f14",
+    "theme_color": "#0b0f14",
+    "icons": [
+      {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png"},
+      {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png"}
+    ]
+  }
+
+  2) sw.js (tiny offline cache; update version to bust cache when you change files)
+  const VERSION = 'v1.0.0';
+  const ASSETS = [ './', './index.html', './manifest.webmanifest' ];
+  self.addEventListener('install', e=>{ e.waitUntil(caches.open(VERSION).then(c=>c.addAll(ASSETS))); });
+  self.addEventListener('activate', e=>{ e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==VERSION).map(k=>caches.delete(k))))); });
+  self.addEventListener('fetch', e=>{
+    const req = e.request;
+    // Network-first for everything, fallback to cache
+    e.respondWith(fetch(req).catch(()=>caches.match(req)));
+  });
+
+  Place icons at ./icons/icon-192.png and ./icons/icon-512.png (any PNGs will do to start).
+  -->
 </body>
 </html>
